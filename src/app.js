@@ -1,7 +1,7 @@
 const readline = require('readline');
-const { ejecutarDiagnostico } = require('../../Proyecto Playground: Registro y Depuración Avanzada/index');
-const { iniciarCLI } = require('../../Proyecto Playground: Herramienta CLI Simple/cli-tool');
-const { obtenerInformacionSistema } = require('../../Proyecto Playground: Monitor Simple del Sistema/system-monitor');
+const { ejecutarDiagnostico } = require('../modules/index');
+const { iniciarCLI } = require('../modules/cli-tool');
+const { obtenerInformacionSistema } = require('../modules/system-monitor');
 
 function menuPrincipal() {
   const rl = readline.createInterface({
