@@ -1,61 +1,34 @@
+// Importación de módulos nativos (os) y librerías externas para estilos (chalk)
 const os = require('os');
 const chalk = require('chalk');
 
 function obtenerInformacionSistema() {
-  console.clear();
-  console.log(chalk.bold.cyan('🖥️   MONITOR DE SISTEMA'));
-  console.log(chalk.cyan('========================================'));
+  function mostrarInformacion() {
+    console.clear();
 
-  console.log(`${chalk.bold('Sistema:')} ${chalk.white(os.platform())} (${chalk.white(os.arch())})`);
-  console.log(`${chalk.bold('CPU:')} ${chalk.white(os.cpus()[0].model)}`);
-  console.log(`${chalk.bold('Cores:')} ${chalk.white(os.cpus().length)}`);
-  console.log(`${chalk.bold('Usuario:')} ${chalk.magenta(os.userInfo().username)}`);
-
-  const totalMemMB = os.totalmem() / (1024 * 1024);
-  const freeMemMB = os.freemem() / (1024 * 1024);
-  const usedMemMB = totalMemMB - freeMemMB;
-  const memUsagePct = ((usedMemMB / totalMemMB) * 100).toFixed(1);
-
-  let memColor = chalk.green;
-  if (memUsagePct > 80) memColor = chalk.red;
-  else if (memUsagePct > 60) memColor = chalk.yellow;
-
-  console.log(
-    `${chalk.bold('Memoria:')} ${memColor(`${usedMemMB.toFixed(0)} MB / ${totalMemMB.toFixed(0)} MB (${memUsagePct}%)`)}`
-  );
-
-  const loadAvg = os.loadavg();
-  const coresCount = os.cpus().length;
-  
-  let loadAlert = chalk.green('Normal');
-  if (loadAvg[0] >= coresCount) {
-    loadAlert = chalk.bgRed.white.bold(' ⚠️  ALERTA: CARGA CRÍTICA ');
-  } else if (loadAvg[0] >= coresCount * 0.7) {
-    loadAlert = chalk.bgYellow.black.bold(' ⚠️  PRECAUCIÓN ');
+    console.log('🖥️  Monitor de Sistema');
+    console.log('========================');
+    // os.platform() e os.arch() retornan el S.O. (ej. 'linux') y la arquitectura de la CPU (ej. 'x64')
+    console.log(`Sistema: ${os.platform()} (${os.arch()})`);
+    
+    // os.cpus() retorna un arreglo con los detalles de cada núcleo lógico del procesador
+    console.log(`CPU: ${os.cpus()[0].model}`);
+    console.log(`Cores: ${os.cpus().length}`);
+    
+    // Conversión de bytes a Megabytes (Bytes / 1024^2) para la memoria RAM
+    console.log(`Memoria Libre: ${(os.freemem() / (1024 * 1024)).toFixed(2)} MB`);
+    console.log(`Memoria Total: ${(os.totalmem() / (1024 * 1024)).toFixed(2)} MB`);
+    
+    // os.uptime() entrega los segundos de actividad del S.O.; se divide por 60 para mostrar minutos
+    console.log(`Uptime: ${(os.uptime() / 60).toFixed(2)} minutos`);
+    
+    // os.userInfo() recupera la información del usuario del sistema operativo actual
+    console.log(`Usuario: ${os.userInfo().username}`);
+    console.log('========================\n');
   }
 
-  console.log(
-    `${chalk.bold('Carga Prom (1/5/15 min):')} ${chalk.yellow(
-      loadAvg.map(l => l.toFixed(2)).join(' | ')
-    )} ${loadAlert}`
-  );
-
-  console.log(`${chalk.bold('Uptime:')} ${chalk.blue((os.uptime() / 60).toFixed(2))} minutos`);
-
-  console.log(chalk.cyan('\n🌐 Interfaces de Red:'));
-  console.log(chalk.cyan('----------------------------------------'));
-  
-  const networkInterfaces = os.networkInterfaces();
-  
-  Object.keys(networkInterfaces).forEach((interfaceName) => {
-    const addresses = networkInterfaces[interfaceName];
-    const ipv4 = addresses.find(addr => addr.family === 'IPv4' && !addr.internal);
-    if (ipv4) {
-      console.log(` • ${chalk.bold.gray(interfaceName)}: ${chalk.green(ipv4.address)}`);
-    }
-  });
-
-  console.log(chalk.cyan('========================================\n'));
+  mostrarInformacion();
 }
 
+// Exporta el módulo para consumo en el menú principal
 module.exports = { obtenerInformacionSistema };

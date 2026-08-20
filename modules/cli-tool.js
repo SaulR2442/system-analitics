@@ -1,48 +1,51 @@
+// Módulo nativo para gestionar la entrada/salida de datos por consola de forma asíncrona
 const readline = require('readline');
 
-function iniciarCLI(callbackAlSalir) {
-  const inicio = Date.now();
+function iniciarCLI() {
+  console.log("Bienvenido a la CLI de ejemplo");
+  console.log("Comandos disponibles: hola, tiempo, salir");
 
-  console.log('\nBienvenido a la CLI de ejemplo');
-  console.log('Comandos disponibles: hola, tiempo, duracion, salir');
-
+  // Crea una interfaz independiente de readline vinculada a la terminal
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout,
-    prompt: 'Ingresa un comando: '
+    output: process.stdout
   });
 
-  rl.prompt();
+  // Función recursiva para mantener el ciclo de preguntas/respuestas activo
+  const pedirComando = () => {
+    rl.question('Ingresa un nuevo comando: ', (data) => {
+      // Normaliza la entrada del usuario eliminando espacios y convirtiendo a minúsculas
+      const input = data.trim().toLowerCase();
 
-  rl.on('line', (line) => {
-    const input = line.trim().toLowerCase();
+      switch (input) {
+        case "hola":
+          console.log("¡Hola! ¿Cómo estás?");
+          pedirComando(); // Reagenda la lectura para el siguiente comando
+          break;
 
-    switch (input) {
-      case 'hola':
-        console.log('¡Hola! ¿Cómo estás?');
-        break;
+        case "tiempo":
+          // process.uptime() retorna en segundos el tiempo de ejecución del proceso de Node.js
+          console.log(`Tiempo activo: ${process.uptime().toFixed(2)} segundos`);
+          pedirComando();
+          break;
 
-      case 'tiempo':
-        console.log(`Tiempo activo del proceso: ${process.uptime().toFixed(2)} segundos`);
-        break;
+        case "salir":
+          console.log("Saliendo...");
+          rl.close(); // Libera la interfaz readline antes de finalizar
+          process.exit(0); // Cierra el proceso de Node.js con código de éxito (0)
+          break;
 
-      case 'duracion':
-        const segundos = ((Date.now() - inicio) / 1000).toFixed(2);
-        console.log(`Duración de la sesión: ${segundos} segundos`);
-        break;
+        default:
+          console.log("Comando no reconocido");
+          pedirComando();
+          break;
+      }
+    });
+  };
 
-      case 'salir':
-        console.log('Saliendo de la CLI...');
-        rl.close();
-        if (callbackAlSalir) callbackAlSalir();
-        return;
-
-      default:
-        console.log('Comando no reconocido');
-    }
-
-    rl.prompt();
-  });
+  // Inicia el primer ciclo de lectura de la CLI
+  pedirComando();
 }
 
+// Exporta la función como un método del objeto para su consumo en app.js
 module.exports = { iniciarCLI };
